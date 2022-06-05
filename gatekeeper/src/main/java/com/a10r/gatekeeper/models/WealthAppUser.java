@@ -31,9 +31,4 @@ public class WealthAppUser {
     @Email
     String emailId;
 
-    public WealthAppUser(String username, String password, String emailId) {
-        this.username = username;
-        this.password = password;
-        this.emailId = emailId;
-    }
 }

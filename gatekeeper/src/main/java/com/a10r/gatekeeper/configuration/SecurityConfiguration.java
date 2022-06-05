@@ -31,20 +31,23 @@ import java.util.Map;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtRequestFilter jwtRequestFilter;
+    private final BcCryptWorkFactorService bcCryptWorkFactorService;
+    private final DatabaseUserDetailPasswordService databaseUserDetailPasswordService;
+    private final WealthAppUserDetailsService wealthAppUserDetailsService;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-
-    @Autowired
-    private BcCryptWorkFactorService bcCryptWorkFactorService;
-
-    @Autowired
-    private DatabaseUserDetailPasswordService databaseUserDetailPasswordService;
-
-    @Autowired
-    private WealthAppUserDetailsService wealthAppUserDetailsService;
+    public SecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtRequestFilter jwtRequestFilter,
+                                 BcCryptWorkFactorService bcCryptWorkFactorService,
+                                 DatabaseUserDetailPasswordService databaseUserDetailPasswordService,
+                                 WealthAppUserDetailsService wealthAppUserDetailsService) {
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtRequestFilter = jwtRequestFilter;
+        this.bcCryptWorkFactorService = bcCryptWorkFactorService;
+        this.databaseUserDetailPasswordService = databaseUserDetailPasswordService;
+        this.wealthAppUserDetailsService = wealthAppUserDetailsService;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

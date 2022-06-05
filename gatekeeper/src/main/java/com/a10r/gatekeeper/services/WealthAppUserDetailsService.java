@@ -18,8 +18,12 @@ import java.util.Collections;
 @Transactional
 public class WealthAppUserDetailsService implements UserDetailsService {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public WealthAppUserDetailsService(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

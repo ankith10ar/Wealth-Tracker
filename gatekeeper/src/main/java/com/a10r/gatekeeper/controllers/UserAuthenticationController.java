@@ -7,7 +7,6 @@ import com.a10r.gatekeeper.models.JwtRequest;
 import com.a10r.gatekeeper.models.JwtResponse;
 import com.a10r.gatekeeper.models.WealthAppUser;
 import com.a10r.gatekeeper.services.UserService;
-import liquibase.pro.packaged.W;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,20 +28,22 @@ import java.util.Objects;
 @RequestMapping("/api/authenticate")
 public class UserAuthenticationController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService jwtInMemoryUserDetailsService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    private UserDetailsService jwtInMemoryUserDetailsService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+                                        UserDetailsService jwtInMemoryUserDetailsService, UserService userService,
+                                        PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtInMemoryUserDetailsService = jwtInMemoryUserDetailsService;
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostMapping
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)

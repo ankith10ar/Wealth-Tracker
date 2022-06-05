@@ -13,11 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DatabaseUserDetailPasswordService implements UserDetailsPasswordService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserDetailsMapper userDetailsMapper;
 
     @Autowired
-    private UserDetailsMapper userDetailsMapper;
+    public DatabaseUserDetailPasswordService(UserRepository userRepository, UserDetailsMapper userDetailsMapper) {
+        this.userRepository = userRepository;
+        this.userDetailsMapper = userDetailsMapper;
+    }
 
     @Override
     public UserDetails updatePassword(UserDetails user, String newPassword) {

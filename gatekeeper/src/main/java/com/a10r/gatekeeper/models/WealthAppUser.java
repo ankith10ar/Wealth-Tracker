@@ -1,10 +1,8 @@
 package com.a10r.gatekeeper.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -15,7 +13,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 @Setter
+@Transactional
 public class WealthAppUser {
 
     @Id
@@ -26,7 +26,6 @@ public class WealthAppUser {
     String username;
 
     @NotBlank
-    @Length(min = 5, max = 15)
     String password;
 
     @Email

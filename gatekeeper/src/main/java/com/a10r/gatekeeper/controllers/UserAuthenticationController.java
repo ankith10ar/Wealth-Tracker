@@ -17,6 +17,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -40,6 +41,9 @@ public class UserAuthenticationController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
             throws Exception {
@@ -57,7 +61,10 @@ public class UserAuthenticationController {
     @PostMapping(path = "/signup")
     public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
 
-        WealthAppUser wealthAppUser = new WealthAppUser(createUserRequest.getUsername(), createUserRequest.getPassword(), createUserRequest.getEmailId());
+        WealthAppUser wealthAppUser = WealthAppUser.builder()
+                .username(createUserRequest.getUsername())
+                .password(passwordEncoder.encode(createUserRequest.getPassword()))
+                .emailId(createUserRequest.getEmailId()).build();
 
         userService.addUser(wealthAppUser);
 

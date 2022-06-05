@@ -1,6 +1,6 @@
 package com.a10r.gatekeeper.configuration;
 
-import com.a10r.gatekeeper.services.JwtUserDetailsService;
+import com.a10r.gatekeeper.services.WealthAppUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUserDetailsService jwtUserDetailsService;
+    private WealthAppUserDetailsService wealthAppUserDetailsService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -50,7 +50,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         //Once we get the token validate it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = this.wealthAppUserDetailsService.loadUserByUsername(username);
 
             // if token is valid configure Spring Security to manually set authentication
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {

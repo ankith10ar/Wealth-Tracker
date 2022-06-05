@@ -11,5 +11,5 @@ public class JwtToken {
 
     long userId;
     @Id
-    String jwtToken;
+    String token;
 }

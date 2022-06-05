@@ -2,6 +2,8 @@ package com.a10r.gatekeeper.configuration;
 
 import com.a10r.gatekeeper.services.WealthAppUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,10 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private final WealthAppUserDetailsService wealthAppUserDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
+    transient WealthAppUserDetailsService wealthAppUserDetailsService;
+    transient JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     public JwtRequestFilter(WealthAppUserDetailsService wealthAppUserDetailsService, JwtTokenUtil jwtTokenUtil) {
@@ -29,6 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
+    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 

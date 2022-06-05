@@ -3,6 +3,9 @@ package com.a10r.gatekeeper.configuration;
 import com.a10r.gatekeeper.services.BcCryptWorkFactorService;
 import com.a10r.gatekeeper.services.DatabaseUserDetailPasswordService;
 import com.a10r.gatekeeper.services.WealthAppUserDetailsService;
+import lombok.AccessLevel;
+import lombok.Value;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +32,14 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtRequestFilter jwtRequestFilter;
-    private final BcCryptWorkFactorService bcCryptWorkFactorService;
-    private final DatabaseUserDetailPasswordService databaseUserDetailPasswordService;
-    private final WealthAppUserDetailsService wealthAppUserDetailsService;
+     transient JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+     transient JwtRequestFilter jwtRequestFilter;
+     transient BcCryptWorkFactorService bcCryptWorkFactorService;
+     transient DatabaseUserDetailPasswordService databaseUserDetailPasswordService;
+     transient WealthAppUserDetailsService wealthAppUserDetailsService;
 
     @Autowired
     public SecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtRequestFilter jwtRequestFilter,

@@ -1,6 +1,8 @@
 package com.a10r.gatekeeper.services;
 
 import com.a10r.gatekeeper.models.WealthAppUser;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,9 +18,10 @@ import java.util.Collections;
 
 @Service
 @Transactional
+@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class WealthAppUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
+    transient UserService userService;
 
     @Autowired
     public WealthAppUserDetailsService(UserService userService) {

@@ -14,6 +14,7 @@ public class BcCryptWorkFactorService {
     private static final int GOAL_MILLISECONDS_PER_PASSWORD = 1000;
     private static final int MIN_STRENGTH = 4;
     private static final int MAX_STRENGTH = 31;
+    private static final int DIFF_IN_STRENGTH = 1;
 
     /**
      * Calculates the strength (a.k.a. log rounds) for the BCrypt Algorithm, so that password encoding
@@ -25,9 +26,9 @@ public class BcCryptWorkFactorService {
                 new BcryptWorkFactor(MAX_STRENGTH, Integer.MAX_VALUE));
     }
 
-    private BcryptWorkFactor calculateStrengthDivideAndConquer(
-            BcryptWorkFactor smallFactor, BcryptWorkFactor bigFactor) {
-        if (bigFactor.getStrength() - smallFactor.getStrength() == 1) {
+    private BcryptWorkFactor calculateStrengthDivideAndConquer(BcryptWorkFactor smallFactor, BcryptWorkFactor bigFactor) {
+
+        if (bigFactor.getStrength() - smallFactor.getStrength() == DIFF_IN_STRENGTH) {
             return getClosestStrength(smallFactor, bigFactor);
         }
         int midStrength =

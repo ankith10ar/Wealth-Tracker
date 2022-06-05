@@ -7,6 +7,9 @@ import com.a10r.gatekeeper.models.JwtRequest;
 import com.a10r.gatekeeper.models.JwtResponse;
 import com.a10r.gatekeeper.models.WealthAppUser;
 import com.a10r.gatekeeper.services.UserService;
+import lombok.AccessLevel;
+import lombok.Value;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +29,14 @@ import java.util.Objects;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/authenticate")
+@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class UserAuthenticationController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final UserDetailsService jwtInMemoryUserDetailsService;
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+    transient AuthenticationManager authenticationManager;
+    transient JwtTokenUtil jwtTokenUtil;
+    transient UserDetailsService jwtInMemoryUserDetailsService;
+    transient UserService userService;
+    transient PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,

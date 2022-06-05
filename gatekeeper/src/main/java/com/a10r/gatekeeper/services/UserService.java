@@ -2,13 +2,16 @@ package com.a10r.gatekeeper.services;
 
 import com.a10r.gatekeeper.dao.UserRepository;
 import com.a10r.gatekeeper.models.WealthAppUser;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class UserService {
 
-    private final UserRepository userRepository;
+    transient UserRepository userRepository;
 
     @Autowired
     public UserService(UserRepository userRepository) {

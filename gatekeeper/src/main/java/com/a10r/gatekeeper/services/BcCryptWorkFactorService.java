@@ -1,5 +1,6 @@
 package com.a10r.gatekeeper.services;
 
+import com.a10r.gatekeeper.exceptions.ComputingBCryptEncodingStrengthFailedException;
 import com.a10r.gatekeeper.models.BcryptWorkFactor;
 import com.google.common.base.Stopwatch;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -71,7 +72,7 @@ public class BcCryptWorkFactorService {
                 return strength;
             }
         }
-        throw new RuntimeException(
+        throw new ComputingBCryptEncodingStrengthFailedException(
                 String.format(
                         "Could not find suitable round number for bcrypt encoding. The encoding with %d rounds"
                                 + " takes less than %d ms.",

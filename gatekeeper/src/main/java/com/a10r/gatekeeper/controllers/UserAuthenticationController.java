@@ -2,11 +2,14 @@ package com.a10r.gatekeeper.controllers;
 
 
 import com.a10r.gatekeeper.configuration.JwtTokenUtil;
+import com.a10r.gatekeeper.exceptions.WealthUserDisabledException;
+import com.a10r.gatekeeper.exceptions.WealthUserInvalidCredentialException;
 import com.a10r.gatekeeper.models.CreateUserRequest;
 import com.a10r.gatekeeper.models.JwtRequest;
 import com.a10r.gatekeeper.models.JwtResponse;
 import com.a10r.gatekeeper.models.WealthAppUser;
 import com.a10r.gatekeeper.services.UserService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
@@ -39,6 +42,7 @@ public class UserAuthenticationController {
     transient PasswordEncoder passwordEncoder;
 
     @Autowired
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public UserAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
                                         UserDetailsService jwtInMemoryUserDetailsService, UserService userService,
                                         PasswordEncoder passwordEncoder) {
@@ -50,8 +54,7 @@ public class UserAuthenticationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
-            throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
@@ -76,16 +79,16 @@ public class UserAuthenticationController {
         return ResponseEntity.status(HttpStatus.CREATED).body("User created Successfully");
     }
 
-    private void authenticate(String username, String password) throws Exception {
+    private void authenticate(String username, String password) {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new WealthUserDisabledException();
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new WealthUserInvalidCredentialException();
         }
     }
 }

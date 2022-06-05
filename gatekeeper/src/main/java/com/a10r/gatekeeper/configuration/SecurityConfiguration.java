@@ -1,10 +1,11 @@
 package com.a10r.gatekeeper.configuration;
 
+import com.a10r.gatekeeper.exceptions.MyBeanCreationException;
 import com.a10r.gatekeeper.services.BcCryptWorkFactorService;
 import com.a10r.gatekeeper.services.DatabaseUserDetailPasswordService;
 import com.a10r.gatekeeper.services.WealthAppUserDetailsService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
-import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ public class SecurityConfiguration {
      transient WealthAppUserDetailsService wealthAppUserDetailsService;
 
     @Autowired
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public SecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtRequestFilter jwtRequestFilter,
                                  BcCryptWorkFactorService bcCryptWorkFactorService,
                                  DatabaseUserDetailPasswordService databaseUserDetailPasswordService,
@@ -74,13 +76,17 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
+        try {
+            return authenticationConfiguration.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new MyBeanCreationException();
+        }
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
+        try {
         httpSecurity
                 // dont authenticate this particular request
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/api/authenticate/**").permitAll()
@@ -96,7 +102,10 @@ public class SecurityConfiguration {
 
 //        httpSecurity.headers().frameOptions().sameOrigin();
 
-        return httpSecurity.build();
+            return httpSecurity.build();
+        } catch (Exception e) {
+            throw new MyBeanCreationException();
+        }
     }
 
     @Bean

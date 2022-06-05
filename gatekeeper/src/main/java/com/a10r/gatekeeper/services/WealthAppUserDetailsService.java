@@ -1,6 +1,7 @@
 package com.a10r.gatekeeper.services;
 
 import com.a10r.gatekeeper.models.WealthAppUser;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class WealthAppUserDetailsService implements UserDetailsService {
     transient UserService userService;
 
     @Autowired
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public WealthAppUserDetailsService(UserService userService) {
         this.userService = userService;
     }

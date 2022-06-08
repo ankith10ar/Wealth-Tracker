@@ -32,7 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
-    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
+    @SuppressWarnings({"PMD.DataflowAnomalyAnalysis","PMD.SystemPrintln"})
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 

@@ -76,6 +76,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @SuppressWarnings("PMD.PreserveStackTrace")
+    //TODO: Add the stack to log debug
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
         try {
             return authenticationConfiguration.getAuthenticationManager();
@@ -85,6 +87,8 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @SuppressWarnings("PMD.PreserveStackTrace")
+    //TODO: Add the stack to log debug
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
         try {
         httpSecurity

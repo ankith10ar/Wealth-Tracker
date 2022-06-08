@@ -22,6 +22,8 @@ repositories {
 
 pmd {
 	consoleOutput = true
+	ruleSetFiles = files('src/main/resources/ruleset/ruleset.xml')
+	toolVersion = "6.46.0"
 }
 
 dependencies {

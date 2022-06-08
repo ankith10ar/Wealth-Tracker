@@ -1,7 +1,6 @@
 package com.a10r.gatekeeper.models;
 
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;

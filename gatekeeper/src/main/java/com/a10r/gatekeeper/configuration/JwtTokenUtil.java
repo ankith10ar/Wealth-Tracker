@@ -3,8 +3,6 @@ package com.a10r.gatekeeper.configuration;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -51,10 +49,10 @@ public class JwtTokenUtil implements Serializable {
         return expiration.before(new Date());
     }
 
-    private Boolean ignoreTokenExpiration(String token) {
-        // here you specify tokens, for that the expiration is ignored
-        return false;
-    }
+//    private Boolean ignoreTokenExpiration(String token) {
+//        // here you specify tokens, for that the expiration is ignored
+//        return false;
+//    }
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -68,7 +66,8 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public Boolean canTokenBeRefreshed(String token) {
-        return (!isTokenExpired(token) || ignoreTokenExpiration(token));
+//        return (!isTokenExpired(token) || ignoreTokenExpiration(token));
+        return !isTokenExpired(token);
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {

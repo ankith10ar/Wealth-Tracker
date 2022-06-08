@@ -11,7 +11,6 @@ import com.a10r.gatekeeper.models.WealthAppUser;
 import com.a10r.gatekeeper.services.UserService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
-import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,6 +78,8 @@ public class UserAuthenticationController {
         return ResponseEntity.status(HttpStatus.CREATED).body("User created Successfully");
     }
 
+    @SuppressWarnings("PMD.PreserveStackTrace")
+    //TODO: Add the stack to log debug
     private void authenticate(String username, String password) {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);

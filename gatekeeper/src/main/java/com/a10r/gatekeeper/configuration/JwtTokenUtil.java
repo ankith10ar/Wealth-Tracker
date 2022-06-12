@@ -1,5 +1,6 @@
 package com.a10r.gatekeeper.configuration;
 
+import com.a10r.gatekeeper.models.WealthAppUserDetails;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +27,15 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.secret}")
     private transient String secret;
 
+    @Value("${jwt.refreshTokenBefore}")
+    private transient long refreshTokenPeriod;
+
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    private String getIdFromToken(String token) {
+        return getClaimFromToken(token, Claims::getId);
     }
 
     public Date getIssuedAtDateFromToken(String token) {
@@ -56,6 +65,11 @@ public class JwtTokenUtil implements Serializable {
         return expiration.before(new Date());
     }
 
+    public Boolean isTokenCloseToExpiry(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.toInstant().minus(refreshTokenPeriod, ChronoUnit.SECONDS).isBefore(new Date().toInstant());
+    }
+
 //    private Boolean ignoreTokenExpiration(String token) {
 //        // here you specify tokens, for that the expiration is ignored
 //        return false;
@@ -63,12 +77,21 @@ public class JwtTokenUtil implements Serializable {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        if (userDetails instanceof WealthAppUserDetails) {
+            return doGenerateToken(claims, userDetails.getUsername(), ((WealthAppUserDetails) userDetails).getId());
+        }
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000)).signWith(SignatureAlgorithm.HS512, secret).compact();
+    }
+
+    private String doGenerateToken(Map<String, Object> claims, String subject, Long id) {
+
+        return Jwts.builder().setClaims(claims).setSubject(subject).setId(String.valueOf(id)).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000)).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
@@ -79,6 +102,14 @@ public class JwtTokenUtil implements Serializable {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
+        final String id = getIdFromToken(token);
+        if (userDetails instanceof WealthAppUserDetails && areIdsNotEqual((WealthAppUserDetails) userDetails, id)) {
+            return false;
+        }
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private boolean areIdsNotEqual(WealthAppUserDetails userDetails, String id) {
+        return !(String.valueOf(userDetails.getId())).equals(id);
     }
 }

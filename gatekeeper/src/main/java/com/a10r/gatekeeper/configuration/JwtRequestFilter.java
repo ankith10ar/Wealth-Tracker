@@ -1,5 +1,6 @@
 package com.a10r.gatekeeper.configuration;
 
+import com.a10r.gatekeeper.services.JwtTokenService;
 import com.a10r.gatekeeper.services.WealthAppUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AccessLevel;
@@ -19,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
@@ -28,11 +30,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     transient WealthAppUserDetailsService wealthAppUserDetailsService;
     transient JwtTokenUtil jwtTokenUtil;
+    transient JwtTokenService jwtTokenService;
 
     @Autowired
-    public JwtRequestFilter(WealthAppUserDetailsService wealthAppUserDetailsService, JwtTokenUtil jwtTokenUtil) {
+    public JwtRequestFilter(WealthAppUserDetailsService wealthAppUserDetailsService, JwtTokenUtil jwtTokenUtil, JwtTokenService jwtTokenService) {
         this.wealthAppUserDetailsService = wealthAppUserDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @Override
@@ -64,7 +68,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.wealthAppUserDetailsService.loadUserByUsername(username);
 
             // if token is valid configure Spring Security to manually set authentication
+            //TODO: check token in redis db rather than validation
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+
+//                if (jwtTokenUtil.isTokenCloseToExpiry(jwtToken)) {
+//                    response.addHeader("X-New-Token", jwtTokenUtil.generateToken(userDetails));
+//                }
+
+                Optional<String> newJwtToken = jwtTokenService.generateTokenIfCloseToExpiry(jwtToken, userDetails);
+                newJwtToken.ifPresent(s -> response.addHeader("X-New-Token", s));
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

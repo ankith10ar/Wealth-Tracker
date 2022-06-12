@@ -7,6 +7,8 @@ import com.a10r.gatekeeper.services.WealthAppUserDetailsService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +37,8 @@ import java.util.Map;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class SecurityConfiguration {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 
      transient JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
      transient JwtRequestFilter jwtRequestFilter;
@@ -77,18 +81,17 @@ public class SecurityConfiguration {
 
     @Bean
     @SuppressWarnings("PMD.PreserveStackTrace")
-    //TODO: Add the stack to log debug
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
         try {
             return authenticationConfiguration.getAuthenticationManager();
         } catch (Exception e) {
+            LOG.error("error while creating authentication manager bean", e);
             throw new MyBeanCreationException();
         }
     }
 
     @Bean
     @SuppressWarnings("PMD.PreserveStackTrace")
-    //TODO: Add the stack to log debug
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
         try {
         httpSecurity
@@ -108,6 +111,7 @@ public class SecurityConfiguration {
 
             return httpSecurity.build();
         } catch (Exception e) {
+            LOG.error("error while creating security filter chain bean bean", e);
             throw new MyBeanCreationException();
         }
     }

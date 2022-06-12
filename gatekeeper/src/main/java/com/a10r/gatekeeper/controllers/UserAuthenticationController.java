@@ -12,6 +12,8 @@ import com.a10r.gatekeeper.services.UserService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,8 @@ import java.util.Objects;
 @RequestMapping("/api/authenticate")
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class UserAuthenticationController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserAuthenticationController.class);
 
     transient AuthenticationManager authenticationManager;
     transient JwtTokenUtil jwtTokenUtil;
@@ -79,7 +83,6 @@ public class UserAuthenticationController {
     }
 
     @SuppressWarnings("PMD.PreserveStackTrace")
-    //TODO: Add the stack to log debug
     private void authenticate(String username, String password) {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);
@@ -87,8 +90,10 @@ public class UserAuthenticationController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
+            LOG.error("user disabled exception", e);
             throw new WealthUserDisabledException();
         } catch (BadCredentialsException e) {
+            LOG.error("bad credentials exception", e);
             throw new WealthUserInvalidCredentialException();
         }
     }

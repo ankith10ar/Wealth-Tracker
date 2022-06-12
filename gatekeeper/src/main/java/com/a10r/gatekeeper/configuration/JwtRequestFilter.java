@@ -4,6 +4,8 @@ import com.a10r.gatekeeper.services.WealthAppUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,8 @@ import java.io.IOException;
 @FieldDefaults(makeFinal=true, level= AccessLevel.PRIVATE)
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JwtRequestFilter.class);
+
     transient WealthAppUserDetailsService wealthAppUserDetailsService;
     transient JwtTokenUtil jwtTokenUtil;
 
@@ -32,7 +36,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
-    @SuppressWarnings({"PMD.DataflowAnomalyAnalysis","PMD.SystemPrintln"})
+    @SuppressWarnings({"PMD.DataflowAnomalyAnalysis"})
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
@@ -46,9 +50,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
+                LOG.error("Unable to get JWT Token", e);
             } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
+                LOG.error("JWT Token has expired", e);
             }
         } else {
             logger.warn("JWT Token does not begin with Bearer String");

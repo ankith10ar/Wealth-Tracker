@@ -26,10 +26,10 @@ public class JwtTokenService {
 
     public String getToken(String username) {
         Optional<JwtToken> jwtToken = jwtTokenRepository.findById(username);
-        if (jwtToken.isPresent()) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (jwtToken.isPresent() && jwtTokenUtil.validateToken(jwtToken.get().getToken(), userDetails)) {
             return jwtToken.get().getToken();
         }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         String newToken = jwtTokenUtil.generateToken(userDetails);
         jwtTokenRepository.save(new JwtToken(username, newToken));
         return newToken;

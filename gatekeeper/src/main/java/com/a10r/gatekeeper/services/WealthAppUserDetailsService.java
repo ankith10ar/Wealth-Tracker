@@ -32,13 +32,17 @@ public class WealthAppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        WealthAppUser wealthAppUser = retrieveUserFromDB(username);
+        return new User(wealthAppUser.getUsername(), wealthAppUser.getPassword(),
+                new ArrayList<GrantedAuthority>(Collections.singletonList(new SimpleGrantedAuthority("user"))));
+    }
+
+    private WealthAppUser retrieveUserFromDB(String username) {
         WealthAppUser wealthAppUser = userService.getUserFromUsername(username);
-        if (wealthAppUser!=null) {
-            return new User(wealthAppUser.getUsername(), wealthAppUser.getPassword(),
-                    new ArrayList<GrantedAuthority>(Collections.singletonList(new SimpleGrantedAuthority("user"))));
-        } else {
+        if (wealthAppUser==null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
+        return wealthAppUser;
     }
 
 }

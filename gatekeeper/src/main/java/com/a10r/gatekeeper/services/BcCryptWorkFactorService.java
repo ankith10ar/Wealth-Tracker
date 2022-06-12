@@ -3,6 +3,8 @@ package com.a10r.gatekeeper.services;
 import com.a10r.gatekeeper.exceptions.ComputingBCryptEncodingStrengthFailedException;
 import com.a10r.gatekeeper.models.BcryptWorkFactor;
 import com.google.common.base.Stopwatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class BcCryptWorkFactorService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BcCryptWorkFactorService.class);
 
     private static final String TEST_PASSWORD = "my password";
     private static final int GOAL_MILLISECONDS_PER_PASSWORD = 1000;
@@ -72,11 +76,12 @@ public class BcCryptWorkFactorService {
                 return strength;
             }
         }
-        throw new ComputingBCryptEncodingStrengthFailedException(
-                String.format(
-                        "Could not find suitable round number for bcrypt encoding. The encoding with %d rounds"
-                                + " takes less than %d ms.",
-                        MAX_STRENGTH, GOAL_MILLISECONDS_PER_PASSWORD));
+        String errorMessage = String.format(
+                "Could not find suitable round number for bcrypt encoding. The encoding with %d rounds"
+                        + " takes less than %d ms.",
+                MAX_STRENGTH, GOAL_MILLISECONDS_PER_PASSWORD);
+        LOG.error(errorMessage);
+        throw new ComputingBCryptEncodingStrengthFailedException(errorMessage);
     }
 
     /**

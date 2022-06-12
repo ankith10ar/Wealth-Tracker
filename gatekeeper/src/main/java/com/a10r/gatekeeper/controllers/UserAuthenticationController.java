@@ -1,13 +1,13 @@
 package com.a10r.gatekeeper.controllers;
 
 
-import com.a10r.gatekeeper.configuration.JwtTokenUtil;
 import com.a10r.gatekeeper.exceptions.WealthUserDisabledException;
 import com.a10r.gatekeeper.exceptions.WealthUserInvalidCredentialException;
 import com.a10r.gatekeeper.models.CreateUserRequest;
 import com.a10r.gatekeeper.models.JwtRequest;
 import com.a10r.gatekeeper.models.JwtResponse;
 import com.a10r.gatekeeper.models.WealthAppUser;
+import com.a10r.gatekeeper.services.JwtTokenService;
 import com.a10r.gatekeeper.services.UserService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AccessLevel;
@@ -21,8 +21,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,21 +37,18 @@ public class UserAuthenticationController {
     private static final Logger LOG = LoggerFactory.getLogger(UserAuthenticationController.class);
 
     transient AuthenticationManager authenticationManager;
-    transient JwtTokenUtil jwtTokenUtil;
-    transient UserDetailsService jwtInMemoryUserDetailsService;
     transient UserService userService;
     transient PasswordEncoder passwordEncoder;
+    transient JwtTokenService jwtTokenService;
 
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public UserAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
-                                        UserDetailsService jwtInMemoryUserDetailsService, UserService userService,
-                                        PasswordEncoder passwordEncoder) {
+    public UserAuthenticationController(AuthenticationManager authenticationManager,UserService userService,
+                                        PasswordEncoder passwordEncoder, JwtTokenService jwtTokenService) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.jwtInMemoryUserDetailsService = jwtInMemoryUserDetailsService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
     }
 
     @PostMapping
@@ -61,10 +56,7 @@ public class UserAuthenticationController {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
-        final UserDetails userDetails = jwtInMemoryUserDetailsService
-                .loadUserByUsername(authenticationRequest.getUsername());
-
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        String token = jwtTokenService.getToken(authenticationRequest.getUsername());
 
         return ResponseEntity.ok(new JwtResponse(token));
     }

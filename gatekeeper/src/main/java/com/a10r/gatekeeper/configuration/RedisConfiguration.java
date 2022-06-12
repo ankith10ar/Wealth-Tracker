@@ -13,7 +13,8 @@ public class RedisConfiguration {
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("localhost", 6379);
-        redisStandaloneConfiguration.setPassword(RedisPassword.of("sdfY35GEY25FF"));
+        redisStandaloneConfiguration.setUsername("wealth-admin");
+        redisStandaloneConfiguration.setPassword(RedisPassword.of("zJ7YUrM646@Qaje"));
         return new JedisConnectionFactory(redisStandaloneConfiguration);
     }
 

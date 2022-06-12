@@ -7,9 +7,11 @@ import org.springframework.data.redis.core.RedisHash;
 
 @RedisHash("JwtToken")
 @Data
+@AllArgsConstructor
+@Getter
 public class JwtToken {
 
-    long userId;
     @Id
-    String token;
+    private String username;
+    private String token;
 }
